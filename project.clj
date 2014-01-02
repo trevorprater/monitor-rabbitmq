@@ -8,6 +8,4 @@
                  [clj-http "0.7.8"]
                  [riemann-clojure-client "0.2.6"]
                  [clj-time "0.6.0"] ]
-  :repositories [  [ "snapshots" "file:///Users/jpr/repo/snapshots" ]
-                   [ "releases" "file:///Users/jpr/repo/releases" ] ]
   )
