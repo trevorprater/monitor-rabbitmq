@@ -1,4 +1,4 @@
-(defproject monitor-rabbitmq "0.1.0-SNAPSHOT"
+(defproject monitor-rabbitmq "0.1.1-SNAPSHOT"
   :description "query RabbitMQ management API for queue statistics and send them to Riemann"
   :url "https://github.com/TheLadders/monitor-rabbitmq"
   :license {:name "The MIT License (MIT)"
@@ -8,4 +8,5 @@
                  [clj-http "0.7.8"]
                  [riemann-clojure-client "0.2.6"]
                  [clj-time "0.6.0"] ]
+  :aot :all
   )
