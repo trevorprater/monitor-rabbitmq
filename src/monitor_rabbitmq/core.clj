@@ -1,9 +1,9 @@
 (ns monitor-rabbitmq.core
-    (:require [cheshire.core :as cheshire])
-    (:require [clj-http.client :as client])
-    (:require [clj-time.core :as tc])
-    (:require [clj-time.coerce :as tcoerce])
-    (:require [riemann.client :as riemann]))
+  (:require [cheshire.core :as cheshire]
+  [clj-http.client :as client]
+  [clj-time.core :as tc]
+  [clj-time.coerce :as tcoerce]
+  [riemann.client :as riemann]))
 
 (def path "/api/queues/")
 
@@ -16,9 +16,9 @@
 (def publish "publish_details")
 (def redeliver "redeliver_details")
 
-(def Riemann-client (fn
-                      ([host port] (riemann/tcp-client :host host :port port))
-                      ([host] (riemann/tcp-client :host host ))))
+(def make-Riemann-client
+  (fn ([host port] (riemann/tcp-client :host host :port port))
+    ([host] (riemann/tcp-client :host host ))))
 
 (defn get-stats [url age-of-oldest-sample-in-seconds seconds-between-samples]
   (:body (client/get url
@@ -118,18 +118,19 @@
                                                 display-name-of-rabbit-host
                                                 Riemann-client]
   (let [url (rmq-url rabbitmq-host-and-port rabbitmq-user rabbitmq-password)
-        result
-    (try
-        (send-queue-stats (cheshire/parse-string (get-stats url
+        result (try
+                 (send-queue-stats (cheshire/parse-string (get-stats
+                                                            url
                                                             age-of-oldest-sample-in-seconds
                                                             seconds-between-samples)
-                                                 true)
-                          Riemann-client
-                          display-name-of-rabbit-host)
-        (catch Exception e
-          (throw (Exception. (str "send-rabbitmq-stats-using-Riemann-client caught exception: " (.getMessage e)))))
-        (finally (riemann/close-client Riemann-client))) ]
-
+                                                          true)
+                                   Riemann-client display-name-of-rabbit-host)
+                 (catch Exception e
+                   (throw
+                     (Exception.
+                       (str "send-rabbitmq-stats-using-Riemann-client caught exception: " (.getMessage e)))))
+                 (finally (riemann/close-client Riemann-client))
+                 )]
     result))
 
 (def send-rabbitmq-stats-to-Riemann
@@ -143,7 +144,7 @@
       display-name-of-rabbit-host
       Riemann-host
       Riemann-port]
-     (let [r-client (Riemann-client Riemann-host Riemann-port)]
+     (let [r-client (make-Riemann-client Riemann-host Riemann-port)]
        (send-rabbitmq-stats-using-Riemann-client rabbitmq-host-and-port
                                                    rabbitmq-user
                                                    rabbitmq-password
@@ -151,7 +152,7 @@
                                                    seconds-between-samples
                                                    display-name-of-rabbit-host
                                                    r-client)))
-    ;signature 2 doesn't not include Riemann-port. default port is used
+    ;signature 2 does not include Riemann-port. default port is used
     ([rabbitmq-host-and-port
       rabbitmq-user
       rabbitmq-password
@@ -159,7 +160,7 @@
       seconds-between-samples
       display-name-of-rabbit-host
       Riemann-host]
-     (let [r-client (Riemann-client Riemann-host)]
+     (let [r-client (make-Riemann-client Riemann-host)]
        (send-rabbitmq-stats-using-Riemann-client rabbitmq-host-and-port
                                                    rabbitmq-user
                                                    rabbitmq-password
