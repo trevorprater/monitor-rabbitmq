@@ -1,9 +1,9 @@
 (ns monitor-rabbitmq.core
   (:require [cheshire.core :as cheshire]
-  [clj-http.client :as client]
-  [clj-time.core :as tc]
-  [clj-time.coerce :as tcoerce]
-  [riemann.client :as riemann]))
+            [clj-http.client :as client]
+            [clj-time.core :as tc]
+            [clj-time.coerce :as tcoerce]
+            [riemann.client :as riemann]))
 
 (def path "/api/queues/")
 
@@ -16,9 +16,9 @@
 (def publish "publish_details")
 (def redeliver "redeliver_details")
 
-(def make-Riemann-client
-  (fn ([host port] (riemann/tcp-client :host host :port port))
-    ([host] (riemann/tcp-client :host host ))))
+(defn make-Riemann-client
+  ([host port] (riemann/tcp-client :host host :port port))
+  ([host] (riemann/tcp-client :host host)))
 
 (defn get-stats [url age-of-oldest-sample-in-seconds seconds-between-samples]
   (:body (client/get url
@@ -95,9 +95,9 @@
            (doall (send-events-to-Riemann Riemann-client events-for-one-queue)))
          (map (fn [queue-monitoring-values]
                 (convert-monitoring-response-to-Riemann-events
-                queue-monitoring-values
-                timestamp
-                display-name-of-rabbit-host))
+                  queue-monitoring-values
+                  timestamp
+                  display-name-of-rabbit-host))
               (map make-queue-monitoring-values queue-stats))))))
 
 (defn rmq-url [rabbitmq-host-and-port rabbitmq-user rabbitmq-password]
@@ -133,40 +133,39 @@
                  )]
     result))
 
-(def send-rabbitmq-stats-to-Riemann
-  (fn
-    ;signature 1 passes Riemann-port
-    ([rabbitmq-host-and-port
-      rabbitmq-user
-      rabbitmq-password
-      age-of-oldest-sample-in-seconds
-      seconds-between-samples
-      display-name-of-rabbit-host
-      Riemann-host
-      Riemann-port]
-     (let [r-client (make-Riemann-client Riemann-host Riemann-port)]
-       (send-rabbitmq-stats-using-Riemann-client rabbitmq-host-and-port
-                                                   rabbitmq-user
-                                                   rabbitmq-password
-                                                   age-of-oldest-sample-in-seconds
-                                                   seconds-between-samples
-                                                   display-name-of-rabbit-host
-                                                   r-client)))
-    ;signature 2 does not include Riemann-port. default port is used
-    ([rabbitmq-host-and-port
-      rabbitmq-user
-      rabbitmq-password
-      age-of-oldest-sample-in-seconds
-      seconds-between-samples
-      display-name-of-rabbit-host
-      Riemann-host]
-     (let [r-client (make-Riemann-client Riemann-host)]
-       (send-rabbitmq-stats-using-Riemann-client rabbitmq-host-and-port
-                                                   rabbitmq-user
-                                                   rabbitmq-password
-                                                   age-of-oldest-sample-in-seconds
-                                                   seconds-between-samples
-                                                   display-name-of-rabbit-host
-                                                   r-client)))))
+(defn send-rabbitmq-stats-to-Riemann
+  ;signature 1 passes Riemann-port
+  ([rabbitmq-host-and-port
+    rabbitmq-user
+    rabbitmq-password
+    age-of-oldest-sample-in-seconds
+    seconds-between-samples
+    display-name-of-rabbit-host
+    Riemann-host
+    Riemann-port]
+   (let [r-client (make-Riemann-client Riemann-host Riemann-port)]
+     (send-rabbitmq-stats-using-Riemann-client rabbitmq-host-and-port
+                                               rabbitmq-user
+                                               rabbitmq-password
+                                               age-of-oldest-sample-in-seconds
+                                               seconds-between-samples
+                                               display-name-of-rabbit-host
+                                               r-client)))
+  ;signature 2 does not include Riemann-port. default port is used
+  ([rabbitmq-host-and-port
+    rabbitmq-user
+    rabbitmq-password
+    age-of-oldest-sample-in-seconds
+    seconds-between-samples
+    display-name-of-rabbit-host
+    Riemann-host]
+   (let [r-client (make-Riemann-client Riemann-host)]
+     (send-rabbitmq-stats-using-Riemann-client rabbitmq-host-and-port
+                                               rabbitmq-user
+                                               rabbitmq-password
+                                               age-of-oldest-sample-in-seconds
+                                               seconds-between-samples
+                                               display-name-of-rabbit-host
+                                               r-client))))
 
 
