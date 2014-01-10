@@ -7,7 +7,7 @@ Query the RabbitMQ management API for queue statistics and send to Riemann
 usage
 =====
 
-[monitor-rabbitmq "0.1.2"]
+[monitor-rabbitmq "0.1.3"]
 
 
 (ns monitor-rabbitmq.example
