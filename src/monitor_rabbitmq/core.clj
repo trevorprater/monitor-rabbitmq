@@ -89,7 +89,7 @@
     (map (fn [Riemann-event] (send-to-Riemann Riemann-client Riemann-event)) Riemann-events))
 
 (defn send-queue-stats [queue-stats Riemann-client display-name-of-rabbit-host]
-  (let [timestamp (tcoerce/to-long (tc/now))]
+  (let [timestamp (/ (tcoerce/to-long (tc/now)) 1000)]
     (doall
     (map (fn [events-for-one-queue]
            (doall (send-events-to-Riemann Riemann-client events-for-one-queue)))
