@@ -66,24 +66,20 @@
   {:time timestamp
    :host host
    :service (first name-value)
-   :metric (second name-value)
+   :metric (if (nil? (second name-value)) 0 (second name-value))
    :state state
    :tags ["rabbitmq"] } )
 
 (defn convert-monitoring-response-to-Riemann-events
-  "filter out nil values and return list of Riemann events"
+  "return list of Riemann events"
   [response-for-queue timestamp rabbit-host ]
   (map
     (fn [name-value]
       (make-Riemann-event
         name-value
         (str rabbit-host "." (first response-for-queue))
-        timestamp
-        "ok"))
-    (remove
-      (fn [name-value]
-        (nil? (nth name-value 1)))
-      (nth response-for-queue 1))))
+        timestamp "ok"))
+    (nth response-for-queue 1)))
 
 (defn send-events-to-Riemann [Riemann-client Riemann-events]
     (map (fn [Riemann-event] (send-to-Riemann Riemann-client Riemann-event)) Riemann-events))

@@ -1,4 +1,4 @@
-(defproject theladders/monitor-rabbitmq "0.1.4"
+(defproject theladders/monitor-rabbitmq "0.1.5"
   :description "query RabbitMQ management API for queue statistics and send them to Riemann"
   :url "https://github.com/TheLadders/monitor-rabbitmq"
   :license {:name "The MIT License (MIT)"
