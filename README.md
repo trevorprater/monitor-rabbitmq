@@ -32,7 +32,7 @@ In the project.clj file at the top level of your project, add monitor-rabbitmq a
 ```clj
 (defproject app-monitor-rabbitmq "0.1.3"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [theladders/monitor-rabbitmq "0.1.4" ]])
+                 [theladders/monitor-rabbitmq "0.1.5" ]])
 ```
 
 ## Code examples ##
@@ -78,7 +78,6 @@ In the project.clj file at the top level of your project, add monitor-rabbitmq a
 
 ### upcoming changes ###
 
-* A Riemann event will be sent for every queue metric (such as redeliver rate), even when that metric is missing from a particular response from the RabbitMQ management API.
 * A new version will change how parameters are passed to send-rabbitmq-stats-to-Riemann.
 * More documentation about the meaning of the RabbitMQ statistics and how RabbitMQ gathers them.
 
