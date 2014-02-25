@@ -7,56 +7,67 @@
 
 (def path "/api/queues/")
 
-(def ack "ack_details" )
-(def qdeliver "deliver_details")
-(def deliver_get "deliver_get_details")
-(def deliver_no_ack "deliver_no_ack_details")
-(def qget "get_details")
-(def get_no_ack "get_no_ack_details")
-(def publish "publish_details")
-(def redeliver "redeliver_details")
+(def rate-query-suffix "_details")
+(def avg-rate-suffix ".avg_rate,")
+(def message-stat-prefix "message_stats.")
+(def rate-metric-suffix ".rate")
+
+; These names determine the part of the query string related to message rates.
+; These names also drive the names of the metrics that are sent to Riemann
+(def rate-statistic-names
+  (list
+    "ack"
+    "deliver"
+    "deliver_get"
+    "deliver_no_ack"
+    "get"
+    "get_no_ack"
+    "publish"
+    "redeliver"))
+
+(defn make-message-stats-fragment[rate-statistic-names]
+  (let [rate-statistic-query-parameters
+        (map (fn[name](str message-stat-prefix name rate-query-suffix avg-rate-suffix))
+             rate-statistic-names)]
+    (apply str "name," rate-statistic-query-parameters)))
 
 (defn make-Riemann-client
   ([host port] (riemann/tcp-client :host host :port port))
   ([host] (riemann/tcp-client :host host)))
 
+(defn query-for-queue-data [age-of-oldest-sample-in-seconds seconds-betweeen-samples]
+  {:query-params
+    {"columns"
+     (str
+       (make-message-stats-fragment rate-statistic-names)
+       "backing_queue_status.len")
+     "msg_rates_age"  age-of-oldest-sample-in-seconds
+     "msg_rates_incr" seconds-betweeen-samples}})
+
 (defn get-stats [url age-of-oldest-sample-in-seconds seconds-between-samples]
-  (:body (client/get url
-                     {:query-params
-                       {"columns"
-                         (str "name,"
-                              "message_stats." ack ".avg_rate,"
-                              "message_stats." qdeliver ".avg_rate,"
-                              "message_stats." deliver_get ".avg_rate,"
-                              "message_stats." deliver_no_ack ".avg_rate,"
-                              "message_stats." qget ".avg_rate,"
-                              "message_stats." get_no_ack ".avg_rate,"
-                              "message_stats." publish ".avg_rate,"
-                              "message_stats." redeliver ".avg_rate,"
-                              "backing_queue_status.len")
-                        "msg_rates_age" age-of-oldest-sample-in-seconds
-                        "msg_rates_incr" seconds-between-samples}} )))
+  (:body (client/get url (query-for-queue-data
+                           age-of-oldest-sample-in-seconds
+                           seconds-between-samples))))
+
+(defn make-rate-pairs-fragment[rate-values]
+  (let [metric-names
+        (map
+          (fn [rate-name] (str rate-name rate-metric-suffix))
+          rate-statistic-names)]
+    (map list metric-names rate-values)))
+
+(defn get-rate-values [queue-data]
+  (map (fn[rate-name]
+         (let  [{{{val :avg_rate} (keyword (str rate-name "_details"))} :message_stats} queue-data]
+           val))
+      rate-statistic-names))
 
 (defn make-queue-monitoring-values [queue-data]
-  (let [{name :name {{ack :avg_rate} :ack_details
-                     {deliver :avg_rate} :deliver_details
-                     {deliver_get :avg_rate} :deliver_get_details
-                     {deliver_no_ack :avg_rate} :deliver_no_ack_details
-                     {get :avg_rate} :get_details
-                     {get_no_ack :avg_rate} :get_no_ack_details
-                     {publish :avg_rate} :publish_details
-                     {redeliver :avg_rate} :redeliver_details
-                     } :message_stats {length :len} :backing_queue_status}  queue-data]
-    (list name
-          (list (list "ack.rate" ack)
-                (list "deliver.rate" deliver)
-                (list "deliver_get.rate" deliver_get)
-                (list "deliver_no_ack.rate" deliver_no_ack)
-                (list "get.rate" get)
-                (list "get_no_ack.rate" get_no_ack)
-                (list "publish.rate" publish)
-                (list "redeliver.rate" redeliver)
-                (list "length" length)))))
+  (let [{name :name} queue-data
+        {{length :len} :backing_queue_status}  queue-data
+        rate-values (get-rate-values queue-data)]
+    (list name (concat (make-rate-pairs-fragment rate-values)
+                       (list (list "length" length))))))
 
 (defn send-to-Riemann [Riemann-client Riemann-event]
   (let [result  (riemann/send-event Riemann-client Riemann-event)]

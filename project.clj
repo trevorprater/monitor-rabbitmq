@@ -7,5 +7,6 @@
                  [cheshire "5.2.0"]
                  [clj-http "0.7.8"]
                  [riemann-clojure-client "0.2.6"]
+                 [junit/junit "4.11"]
                  [clj-time "0.6.0"]]
   :aot :all)

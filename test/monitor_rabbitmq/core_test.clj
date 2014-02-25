@@ -3,15 +3,13 @@
             [monitor-rabbitmq.core :as monitor]
             [cheshire.core :as cheshire]))
 
+(def epsilon 0.0000000001)
 
-;(deftest a-test
-;  (testing "FIXME, I fail."
-;    (is (= 0 1))))
+(defn test-double[expect actual]
+  (try (org.junit.Assert/assertEquals expect actual epsilon)
+       true
+       (catch AssertionError e false)))
 
-
-;(deftest good-test
-;  (testing "2=2"
-;    (is (= 2 2))))
 
 (deftest test-make-queue-monitoring-values
   (let [stats (cheshire/parse-string (slurp "test/stats.json") true)
@@ -25,14 +23,14 @@
       (is (= stat-count 2))
       (is (= name "match-jobseekers-with-jobs"))
       (is (= (count values) 9))
-      (is (= (find-value "ack.rate" values) 0.0))
-      (is (= (find-value "deliver.rate" values) 23.333333333333332))
-      (is (= (find-value "deliver_get.rate" values) 23.333333333333332))
+      (is (test-double (find-value "ack.rate" values) 0.0))
+      (is (test-double (find-value "deliver.rate" values) 23.333333333333332))
+      (is (test-double (find-value "deliver_get.rate" values) 23.333333333333332))
       (is (= (find-value "deliver_no_ack.rate" values) nil))
       (is (= (find-value "get.rate" values) nil))
       (is (= (find-value "get_no_ack.rate" values) nil))
       (is (= (find-value "publish.rate" values) 0.0))
-      (is (= (find-value "redeliver.rate" values) 23.333333333333332))
+      (is (test-double (find-value "redeliver.rate" values) 23.333333333333332))
       (is (= (find-value "length" values) 1910)))))
 
 (defn find-value[key pairs]
@@ -41,7 +39,7 @@
 (def args-map
   {:rmq "rabbitmq-qa-2.laddersoffice.net:15672"
    :r-user "monitoring"
-   :r-pass  "ladders"
+   :r-pass  "changeme"
    :rmq-display-name  "rabbitmq"
    :Riemann-host "riemann-qa-1.laddersoffice.net"}
   )
