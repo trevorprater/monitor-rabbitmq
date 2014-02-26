@@ -35,14 +35,14 @@
   ([host port] (riemann/tcp-client :host host :port port))
   ([host] (riemann/tcp-client :host host)))
 
-(defn query-for-queue-data [age-of-oldest-sample-in-seconds seconds-betweeen-samples]
+(defn query-for-queue-data [age-of-oldest-sample-in-seconds seconds-between-samples]
   {:query-params
     {"columns"
      (str
        (make-message-stats-fragment rate-statistic-names)
        "backing_queue_status.len")
      "msg_rates_age"  age-of-oldest-sample-in-seconds
-     "msg_rates_incr" seconds-betweeen-samples}})
+     "msg_rates_incr" seconds-between-samples}})
 
 (defn get-stats [url age-of-oldest-sample-in-seconds seconds-between-samples]
   (:body (client/get url (query-for-queue-data

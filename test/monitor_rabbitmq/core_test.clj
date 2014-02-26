@@ -10,6 +10,8 @@
        true
        (catch AssertionError e false)))
 
+(defn find-value[key pairs]
+  (second (first (filter (fn [pair](= key (first pair))) pairs))))
 
 (deftest test-make-queue-monitoring-values
   (let [stats (cheshire/parse-string (slurp "test/stats.json") true)
@@ -32,9 +34,6 @@
       (is (= (find-value "publish.rate" values) 0.0))
       (is (test-double (find-value "redeliver.rate" values) 23.333333333333332))
       (is (= (find-value "length" values) 1910)))))
-
-(defn find-value[key pairs]
-  (second (first (filter (fn [pair](= key (first pair))) pairs))))
 
 (def args-map
   {:rmq "rabbitmq-qa-2.laddersoffice.net:15672"
