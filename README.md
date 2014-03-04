@@ -78,6 +78,7 @@ In the project.clj file at the top level of your project, add monitor-rabbitmq a
 
 ### upcoming changes ###
 
+* Function and variable names will change (no upper case) to better match Clojure conventions.
 * A new version will change how parameters are passed to send-rabbitmq-stats-to-Riemann.
 * More documentation about the meaning of the RabbitMQ statistics and how RabbitMQ gathers them.
 
