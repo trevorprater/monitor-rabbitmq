@@ -31,7 +31,7 @@
              rate-statistic-names)]
     (apply str "name," rate-statistic-query-parameters)))
 
-(defn make-Riemann-client
+(defn make-riemann-client
   ([host port] (riemann/tcp-client :host host :port port))
   ([host] (riemann/tcp-client :host host)))
 
@@ -69,11 +69,11 @@
     (list name (concat (make-rate-pairs-fragment rate-values)
                        (list (list "length" length))))))
 
-(defn send-to-Riemann [Riemann-client Riemann-event]
-  (let [result  (riemann/send-event Riemann-client Riemann-event)]
-    (list result Riemann-event)))
+(defn send-to-riemann [riemann-client riemann-event]
+  (let [result  (riemann/send-event riemann-client riemann-event)]
+    (list result riemann-event)))
 
-(defn make-Riemann-event [name-value host timestamp state]
+(defn make-riemann-event [name-value host timestamp state]
   {:time timestamp
    :host host
    :service (first name-value)
@@ -81,27 +81,27 @@
    :state state
    :tags ["rabbitmq"] } )
 
-(defn convert-monitoring-response-to-Riemann-events
+(defn convert-monitoring-response-to-riemann-events
   "return list of Riemann events"
   [response-for-queue timestamp rabbit-host ]
   (map
     (fn [name-value]
-      (make-Riemann-event
+      (make-riemann-event
         name-value
         (str rabbit-host "." (first response-for-queue))
         timestamp "ok"))
     (nth response-for-queue 1)))
 
-(defn send-events-to-Riemann [Riemann-client Riemann-events]
-    (map (fn [Riemann-event] (send-to-Riemann Riemann-client Riemann-event)) Riemann-events))
+(defn send-events-to-riemann [riemann-client riemann-events]
+    (map (fn [riemann-event] (send-to-riemann riemann-client riemann-event)) riemann-events))
 
-(defn send-queue-stats [queue-stats Riemann-client display-name-of-rabbit-host]
+(defn send-queue-stats [queue-stats riemann-client display-name-of-rabbit-host]
   (let [timestamp (/ (tcoerce/to-long (tc/now)) 1000)]
     (doall
     (map (fn [events-for-one-queue]
-           (doall (send-events-to-Riemann Riemann-client events-for-one-queue)))
+           (doall (send-events-to-riemann riemann-client events-for-one-queue)))
          (map (fn [queue-monitoring-values]
-                (convert-monitoring-response-to-Riemann-events
+                (convert-monitoring-response-to-riemann-events
                   queue-monitoring-values
                   timestamp
                   display-name-of-rabbit-host))
@@ -117,13 +117,13 @@
              (:host-and-port query-info)
              path)))
 
-(defn send-rabbitmq-stats-using-Riemann-client [rabbitmq-host-and-port
+(defn send-rabbitmq-stats-using-riemann-client [rabbitmq-host-and-port
                                                 rabbitmq-user
                                                 rabbitmq-password
                                                 age-of-oldest-sample-in-seconds
                                                 seconds-between-samples
                                                 display-name-of-rabbit-host
-                                                Riemann-client]
+                                                riemann-client]
   (let [url (rmq-url rabbitmq-host-and-port rabbitmq-user rabbitmq-password)
         result (try
                  (send-queue-stats (cheshire/parse-string (get-stats
@@ -131,16 +131,16 @@
                                                             age-of-oldest-sample-in-seconds
                                                             seconds-between-samples)
                                                           true)
-                                   Riemann-client display-name-of-rabbit-host)
+                                   riemann-client display-name-of-rabbit-host)
                  (catch Exception e
                    (throw
                      (Exception.
-                       (str "send-rabbitmq-stats-using-Riemann-client caught exception: " (.getMessage e)))))
-                 (finally (riemann/close-client Riemann-client))
+                       (str "send-rabbitmq-stats-using-riemann-client caught exception: " (.getMessage e)))))
+                 (finally (riemann/close-client riemann-client))
                  )]
     result))
 
-(defn send-rabbitmq-stats-to-Riemann
+(defn send-rabbitmq-stats-to-riemann
   ;signature 1 passes Riemann-port
   ([rabbitmq-host-and-port
     rabbitmq-user
@@ -148,10 +148,10 @@
     age-of-oldest-sample-in-seconds
     seconds-between-samples
     display-name-of-rabbit-host
-    Riemann-host
-    Riemann-port]
-   (let [r-client (make-Riemann-client Riemann-host Riemann-port)]
-     (send-rabbitmq-stats-using-Riemann-client rabbitmq-host-and-port
+    riemann-host
+    riemann-port]
+   (let [r-client (make-riemann-client riemann-host riemann-port)]
+     (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
                                                rabbitmq-user
                                                rabbitmq-password
                                                age-of-oldest-sample-in-seconds
@@ -165,9 +165,9 @@
     age-of-oldest-sample-in-seconds
     seconds-between-samples
     display-name-of-rabbit-host
-    Riemann-host]
-   (let [r-client (make-Riemann-client Riemann-host)]
-     (send-rabbitmq-stats-using-Riemann-client rabbitmq-host-and-port
+    riemann-host]
+   (let [r-client (make-riemann-client riemann-host)]
+     (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
                                                rabbitmq-user
                                                rabbitmq-password
                                                age-of-oldest-sample-in-seconds

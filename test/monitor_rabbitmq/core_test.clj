@@ -40,8 +40,7 @@
    :r-user "monitoring"
    :r-pass  "changeme"
    :rmq-display-name  "rabbitmq"
-   :Riemann-host "riemann-qa-1.laddersoffice.net"}
-  )
+   :riemann-host "riemann-qa-1.laddersoffice.net"})
 
 (defn get-stats-from-qa[]
   (monitor/get-stats (monitor/rmq-url
