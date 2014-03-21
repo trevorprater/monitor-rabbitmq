@@ -1,6 +1,6 @@
-(ns monitor-rabbitmq.core-test
+(ns monitor-rabbitmq.queues-test
   (:require [clojure.test :refer :all]
-            [monitor-rabbitmq.core :as monitor]
+            [monitor-rabbitmq.queues :as monitor]
             [cheshire.core :as cheshire]))
 
 (def epsilon 0.0000000001)
@@ -34,16 +34,3 @@
       (is (= (find-value "publish.rate" values) 0.0))
       (is (test-double (find-value "redeliver.rate" values) 23.333333333333332))
       (is (= (find-value "length" values) 1910)))))
-
-(def args-map
-  {:rmq "rabbitmq-qa-2.laddersoffice.net:15672"
-   :r-user "monitoring"
-   :r-pass  "changeme"
-   :rmq-display-name  "rabbitmq"
-   :riemann-host "riemann-qa-1.laddersoffice.net"})
-
-(defn get-stats-from-qa[]
-  (monitor/get-stats (monitor/rmq-url
-                       (:rmq args-map) (:r-user args-map) (:r-pass args-map))
-                     300
-                     15))
