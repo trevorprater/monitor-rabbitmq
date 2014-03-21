@@ -11,7 +11,7 @@
 (def seconds-between-samples 15)
 
 (defn do-it-with-default-Riemann-port []
-  (monitor/send-rabbitmq-stats-to-Riemann rmq
+  (monitor/send-rabbitmq-stats-to-riemann rmq
                                           r-user
                                           r-pass
                                           age-of-oldest-sample-in-seconds
@@ -19,7 +19,7 @@
                                           rmq-display-name
                                           Riemann-host))
 (defn do-it-with-Riemann-port []
-  (monitor/send-rabbitmq-stats-to-Riemann rmq
+  (monitor/send-rabbitmq-stats-to-riemann rmq
                                           r-user
                                           r-pass
                                           age-of-oldest-sample-in-seconds
