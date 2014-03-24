@@ -100,6 +100,8 @@
                  )]
     result))
 
+(defn send-queues-stats-to-riemann [rmq-url-opts rmq-query-opts display-name-of-rabbit-host riemann-client]
+
 (defn send-rabbitmq-stats-to-riemann
   ;signature 1 passes Riemann-port
   ([rabbitmq-host-and-port
@@ -109,8 +111,7 @@
     seconds-between-samples
     display-name-of-rabbit-host
     riemann-host
-    riemann-port
-    endpoints]
+    riemann-port]
    (let [r-client (make-riemann-client riemann-host riemann-port)]
      (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
                                                rabbitmq-user
