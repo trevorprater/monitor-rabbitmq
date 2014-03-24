@@ -1,5 +1,6 @@
 (ns monitor-rabbitmq.core
   (:require [monitor-rabbitmq.queues :as queues]
+            [monitor-rabbitmq.nodes :as nodes]
             [cheshire.core :as cheshire]
             [clj-http.client :as client]
             [clj-time.core :as tc]
@@ -108,7 +109,8 @@
     seconds-between-samples
     display-name-of-rabbit-host
     riemann-host
-    riemann-port]
+    riemann-port
+    endpoints]
    (let [r-client (make-riemann-client riemann-host riemann-port)]
      (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
                                                rabbitmq-user
@@ -119,7 +121,17 @@
                                                r-client
                                                queues/path
                                                queues/query-columns-for-queue-data
-                                               queues/make-queue-monitoring-values)))
+                                               queues/make-queue-monitoring-values)
+     (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
+                                               rabbitmq-user
+                                               rabbitmq-password
+                                               age-of-oldest-sample-in-seconds
+                                               seconds-between-samples
+                                               display-name-of-rabbit-host
+                                               r-client
+                                               nodes/path
+                                               nodes/query-columns-for-node-data
+                                               nodes/make-node-monitoring-values)))
   ;signature 2 does not include Riemann-port. default port is used
   ([rabbitmq-host-and-port
     rabbitmq-user
@@ -138,4 +150,14 @@
                                                r-client
                                                queues/path
                                                queues/query-columns-for-queue-data
-                                               queues/make-queue-monitoring-values))))
+                                               queues/make-queue-monitoring-values)
+     (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
+                                               rabbitmq-user
+                                               rabbitmq-password
+                                               age-of-oldest-sample-in-seconds
+                                               seconds-between-samples
+                                               display-name-of-rabbit-host
+                                               r-client
+                                               nodes/path
+                                               nodes/query-columns-for-node-data
+                                               nodes/make-node-monitoring-values))))
