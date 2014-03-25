@@ -7,9 +7,8 @@
             [clj-time.coerce :as tcoerce]
             [riemann.client :as riemann]))
 
-(defn make-riemann-client
-  ([host port] (riemann/tcp-client :host host :port port))
-  ([host] (riemann/tcp-client :host host)))
+(defn make-riemann-client [host port] 
+  (riemann/tcp-client :host host :port port))
 
 (defn query-for-data [columns age-of-oldest-sample-in-seconds seconds-between-samples]
   {:query-params
@@ -17,13 +16,13 @@
      "msg_rates_age"  age-of-oldest-sample-in-seconds
      "msg_rates_incr" seconds-between-samples}})
 
-(defn get-stats [url path columns age-of-oldest-sample-in-seconds seconds-between-samples]
+(defn get-stats [url path columns rmq-query-args]
   (:body (client/get 
            (str url path) 
            (query-for-data
              columns
-             age-of-oldest-sample-in-seconds
-             seconds-between-samples))))
+             (:msg-rates-age rmq-query-args)
+             (:msg-rates-incr rmq-query-args)))))
 
 (defn send-to-riemann [riemann-client riemann-event]
   (let [result  (riemann/send-event riemann-client riemann-event)]
@@ -63,102 +62,97 @@
                   display-name-of-rabbit-host))
               (map stats-converter stats))))))
 
-(defn rmq-url [rabbitmq-host-and-port rabbitmq-user rabbitmq-password]
-  (let [query-info {:user rabbitmq-user, :password rabbitmq-password, :host-and-port rabbitmq-host-and-port}]
-    (str "http://"
-             (:user query-info)
-             ":"
-             (:password query-info)
-             "@"
-             (:host-and-port query-info))))
+(defn rmq-url [rmq-url-args]
+  (str "http://"
+    (:user rmq-url-args)
+    ":"
+    (:password rmq-url-args)
+    "@"
+    (:host-and-port rmq-url-args)))
 
-(defn send-rabbitmq-stats-using-riemann-client [rabbitmq-host-and-port
-                                                rabbitmq-user
-                                                rabbitmq-password
-                                                age-of-oldest-sample-in-seconds
-                                                seconds-between-samples
+(defn send-rabbitmq-stats-using-riemann-client [rmq-url-args
+                                                rmq-query-args
                                                 display-name-of-rabbit-host
                                                 riemann-client
-                                                path
-                                                columns
-                                                stats-converter]
-  (let [base-url (rmq-url rabbitmq-host-and-port rabbitmq-user rabbitmq-password)
+                                                endpoint-args]
+    (let [base-url (rmq-url rmq-url-args)
         result (try
-                 (send-stats (cheshire/parse-string (get-stats
+        	(send-stats (cheshire/parse-string (get-stats
                                                       base-url
-                                                      path
-                                                      columns
-                                                      age-of-oldest-sample-in-seconds
-                                                      seconds-between-samples)
+                                                      (:path endpoint-args)
+                                                      ((:columns endpoint-args))
+                                                      rmq-query-args)
                                                     true)
-                                   stats-converter riemann-client display-name-of-rabbit-host)
-                 (catch Exception e
+                                   (:stats-converter endpoint-args)
+                                   riemann-client
+                                   display-name-of-rabbit-host)
+                                   (catch Exception e
                    (throw
                      (Exception.
                        (str "send-rabbitmq-stats-using-riemann-client caught exception: " (.getMessage e)))))
                  (finally (riemann/close-client riemann-client))
                  )]
     result))
+    
 
-(defn send-queues-stats-to-riemann [rmq-url-opts rmq-query-opts display-name-of-rabbit-host riemann-client]
+(defn send-queues-stats-to-riemann [rabbitmq-host-and-port
+                                    rabbitmq-user
+                                    rabbitmq-password
+                                    age-of-oldest-sample-in-seconds
+                                    seconds-between-samples
+                                    display-name-of-rabbit-host
+                                    riemann-host
+                                    &[riemann-port]]
+  (let [rmq-url-args {:host-and-port rabbitmq-host-and-port :user rabbitmq-user :password rabbitmq-password}
+        rmq-query-args {:msg-rates-age age-of-oldest-sample-in-seconds :msg-rates-incr seconds-between-samples}]
+    (send-rabbitmq-stats-using-riemann-client rmq-url-args
+                                              rmq-query-args
+                                              display-name-of-rabbit-host
+                                              (make-riemann-client riemann-host riemann-port)
+                                              {:path queues/path
+                                               :columns queues/query-columns-for-queue-data
+                                               :stats-converter queues/make-queue-monitoring-values})))
 
-(defn send-rabbitmq-stats-to-riemann
-  ;signature 1 passes Riemann-port
-  ([rabbitmq-host-and-port
+(defn send-nodes-stats-to-riemann [rabbitmq-host-and-port
     rabbitmq-user
     rabbitmq-password
     age-of-oldest-sample-in-seconds
     seconds-between-samples
     display-name-of-rabbit-host
     riemann-host
-    riemann-port]
-   (let [r-client (make-riemann-client riemann-host riemann-port)]
-     (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
-                                               rabbitmq-user
-                                               rabbitmq-password
-                                               age-of-oldest-sample-in-seconds
-                                               seconds-between-samples
+    &[riemann-port]]
+   (let [rmq-url-args {:host-and-port rabbitmq-host-and-port :user rabbitmq-user :password rabbitmq-password}
+         rmq-query-args {:msg-rates-age age-of-oldest-sample-in-seconds :msg-rates-incr seconds-between-samples}]
+     (send-rabbitmq-stats-using-riemann-client rmq-url-args
+                                               rmq-query-args
                                                display-name-of-rabbit-host
-                                               r-client
-                                               queues/path
-                                               queues/query-columns-for-queue-data
-                                               queues/make-queue-monitoring-values)
-     (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
-                                               rabbitmq-user
-                                               rabbitmq-password
-                                               age-of-oldest-sample-in-seconds
-                                               seconds-between-samples
+                                               (make-riemann-client riemann-host riemann-port)
+                                               {:path nodes/path
+                                               :columns nodes/query-columns-for-node-data
+                                               :stats-converter nodes/make-node-monitoring-values})))
+
+(defn send-rabbitmq-stats-to-riemann [rabbitmq-host-and-port
+                                      rabbitmq-user
+                                      rabbitmq-password
+                                      age-of-oldest-sample-in-seconds
+                                      seconds-between-samples
+                                      display-name-of-rabbit-host
+                                      riemann-host
+                                      &[riemann-port]]
+   (let [rmq-url-args {:host-and-port rabbitmq-host-and-port :user rabbitmq-user :password rabbitmq-password}
+         rmq-query-args {:msg-rates-age age-of-oldest-sample-in-seconds :msg-rates-incr seconds-between-samples}]
+     
+       (send-rabbitmq-stats-using-riemann-client rmq-url-args
+                                               rmq-query-args
                                                display-name-of-rabbit-host
-                                               r-client
-                                               nodes/path
-                                               nodes/query-columns-for-node-data
-                                               nodes/make-node-monitoring-values)))
-  ;signature 2 does not include Riemann-port. default port is used
-  ([rabbitmq-host-and-port
-    rabbitmq-user
-    rabbitmq-password
-    age-of-oldest-sample-in-seconds
-    seconds-between-samples
-    display-name-of-rabbit-host
-    riemann-host]
-   (let [r-client (make-riemann-client riemann-host)]
-     (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
-                                               rabbitmq-user
-                                               rabbitmq-password
-                                               age-of-oldest-sample-in-seconds
-                                               seconds-between-samples
+                                               (make-riemann-client riemann-host riemann-port)
+                                               {:path queues/path
+                                               :columns queues/query-columns-for-queue-data
+                                               :stats-converter queues/make-queue-monitoring-values})
+     (send-rabbitmq-stats-using-riemann-client rmq-url-args
+                                               rmq-query-args
                                                display-name-of-rabbit-host
-                                               r-client
-                                               queues/path
-                                               queues/query-columns-for-queue-data
-                                               queues/make-queue-monitoring-values)
-     (send-rabbitmq-stats-using-riemann-client rabbitmq-host-and-port
-                                               rabbitmq-user
-                                               rabbitmq-password
-                                               age-of-oldest-sample-in-seconds
-                                               seconds-between-samples
-                                               display-name-of-rabbit-host
-                                               r-client
-                                               nodes/path
-                                               nodes/query-columns-for-node-data
-                                               nodes/make-node-monitoring-values))))
+                                               (make-riemann-client riemann-host riemann-port)
+                                               {:path nodes/path
+                                               :columns nodes/query-columns-for-node-data
+                                               :stats-converter nodes/make-node-monitoring-values})))
