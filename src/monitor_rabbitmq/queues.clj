@@ -44,9 +44,11 @@
            val))
       rate-statistic-names))
 
-(defn make-queue-monitoring-values [queue-data]
+(defn make-queue-monitoring-values [queue-data display-name-of-rabbit-host]
   (let [{name :name} queue-data
         {{length :len} :backing_queue_status}  queue-data
         rate-values (get-rate-values queue-data)]
-    (list name (concat (make-rate-pairs-fragment rate-values)
-                       (list (list "length" length))))))
+    (list
+      (clojure.string/join "." [display-name-of-rabbit-host name])
+      (concat (make-rate-pairs-fragment rate-values)
+        (list (list "length" length))))))

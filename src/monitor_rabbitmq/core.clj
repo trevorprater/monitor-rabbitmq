@@ -38,12 +38,12 @@
 
 (defn convert-monitoring-response-to-riemann-events
   "return list of Riemann events"
-  [response timestamp rabbit-host]
+  [response timestamp]
   (map
     (fn [name-value]
       (make-riemann-event
         name-value
-        (str rabbit-host "." (first response))
+        (first response)
         timestamp "ok"))
     (nth response 1)))
 
@@ -58,9 +58,8 @@
          (map (fn [monitoring-values]
                 (convert-monitoring-response-to-riemann-events
                   monitoring-values
-                  timestamp
-                  display-name-of-rabbit-host))
-              (map stats-converter stats))))))
+                  timestamp))
+              (map stats-converter stats display-name-of-rabbit-host))))))
 
 (defn rmq-url [rmq-url-args]
   (str "http://"

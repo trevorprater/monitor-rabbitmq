@@ -22,7 +22,7 @@
 (defn query-columns-for-node-data []
   (clojure.string/join "," (cons "name" node-statistic-names)))
 
-(defn make-node-monitoring-values [node-data]
+(defn make-node-monitoring-values [node-data & _]
   (list 
     (last (clojure.string/split (:name node-data) #"@"))
     (map (fn [stat-name]
