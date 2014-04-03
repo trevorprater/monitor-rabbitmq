@@ -1,24 +1,29 @@
-monitor-rabbitmq provides a utility function that requests queue statistics from the RabbitMQ Management API and converts them to Riemann events
+monitor-rabbitmq provides utility functions that request statistics from the RabbitMQ Management API and convert them to Riemann events
 
-### What does the function do? ###
+### What does the functions do? ###
 
-The function makes a request to the RabbitMQ Management API for the following information about all queues:
-* length
-* ack rate
-* deliver rate
-* deliver get rate
-* deliver no ack rate
-* get rate
-* get no ack rate
-* publish rate
-* redeliver rate
+The functions makes requests to the RabbitMQ Management API for the following information about:
+
+Endpoint | Stats | Endpoint | Stats 
+-------- | ----- | -------- | -----
+queues | length | nodes | fd_used
+ | ack rate | | fd_total
+ | deliver rate | | sockets_used
+ | deliver get rate | | sockets_total
+ | deliver no ack rate | | mem_used
+ | get rate | | mem_limit
+ | get no ack rate | | mem_alarm
+ | publish rate | | disk_free_limit
+ | redeliver rate | | disk_free_alarm
+ | | | proc_used
+ | | | proc_total
 
 Each statistic is converted to a Riemann event and sent to a Riemann server.
 
 ### What does the Riemann event look like? ###
 ```clj
 {:time 1390593087006,
-    :host "rabbitmq.push.notification.sender", ; this is the rmq-display-name composed with the queue name
+    :host "rabbitmq.super.awesome.queue", ; this is the rmq-display-name composed with the queue or node name
     :service "publish.rate",
     :metric 0.0,
     :state "ok",
@@ -30,9 +35,9 @@ Each statistic is converted to a Riemann event and sent to a Riemann server.
 In the project.clj file at the top level of your project, add monitor-rabbitmq as a dependency:
 
 ```clj
-(defproject app-monitor-rabbitmq "0.1.3"
+(defproject my-rabbitmq-app "0.1.3"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [theladders/monitor-rabbitmq "0.1.5" ]])
+                 [theladders/monitor-rabbitmq "0.2.0" ]])
 ```
 
 ## Code examples ##
@@ -40,6 +45,9 @@ In the project.clj file at the top level of your project, add monitor-rabbitmq a
 
 ### using the function ###
 
+Calling the send-rabbitmq-stats-to-riemann function will always send stats from all endpoints.
+
+There are also send-**[endpoint]**-rabbitmq-stats-to-riemann functions to only send stats from a specific endpoint, if so desired.
 
 ```clj
 (ns monitor-rabbitmq.example
@@ -54,19 +62,9 @@ In the project.clj file at the top level of your project, add monitor-rabbitmq a
 (def age-of-oldest-sample-in-seconds 300)  ; the first data point used to calculate average rate
 (def seconds-between-samples 15)  ; the sampling rate
 
-; this function uses the version of send-rabbitmq-stats-to-Riemann that does not require a Riemann port number
+; Note: port is optional below
 (defn do-it-with-default-Riemann-port []
-  (monitor/send-rabbitmq-stats-to-Riemann rmq
-                                          r-user
-                                          r-pass
-                                          age-of-oldest-sample-in-seconds
-                                          seconds-between-samples
-                                          rmq-display-name
-                                          Riemann-host))
-
-; here, we use the version of the function which allows us to specify the Riemann port                                         
-(defn do-it-with-Riemann-port []
-  (monitor/send-rabbitmq-stats-to-Riemann rmq
+  (monitor/send-rabbitmq-stats-to-riemann rmq
                                           r-user
                                           r-pass
                                           age-of-oldest-sample-in-seconds
