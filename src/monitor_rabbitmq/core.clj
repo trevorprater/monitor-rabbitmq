@@ -59,7 +59,7 @@
                 (convert-monitoring-response-to-riemann-events
                   monitoring-values
                   timestamp))
-              (map stats-converter stats display-name-of-rabbit-host))))))
+              (map #(stats-converter % display-name-of-rabbit-host) stats))))))
 
 (defn rmq-url [rmq-url-args]
   (str "http://"
