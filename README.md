@@ -80,8 +80,7 @@ There are also *send-*__[endpoint]__*-stats-to-riemann* functions to only send s
 
 ### upcoming changes ###
 
-* Function and variable names will change (no upper case) to better match Clojure conventions.
-* A new version will change how parameters are passed to send-rabbitmq-stats-to-riemann.
+* A new version will change how parameters are passed to *send-rabbitmq-stats-to-riemann*.
 * More documentation about the meaning of the RabbitMQ statistics and how RabbitMQ gathers them.
 
 
