@@ -1,6 +1,6 @@
 monitor-rabbitmq provides utility functions that request statistics from the RabbitMQ Management API and convert them to Riemann events
 
-### What does the functions do? ###
+### What do the functions do? ###
 
 The functions makes requests to the RabbitMQ Management API for the following information about:
 
