@@ -1,8 +1,8 @@
-monitor-rabbitmq provides utility functions that request statistics from the RabbitMQ Management API and convert them to Riemann events
+**monitor-rabbitmq** provides utility functions that request statistics from the RabbitMQ Management API and convert them to Riemann events
 
 ### What do the functions do? ###
 
-The functions makes requests to the RabbitMQ Management API for the following information about:
+The functions make requests to the RabbitMQ Management API for the following information about:
 
 Endpoint | Stats | Endpoint | Stats 
 -------- | ----- | -------- | -----
@@ -32,7 +32,7 @@ Each statistic is converted to a Riemann event and sent to a Riemann server.
 
 ### Using monitor-rabbitmq ###
 
-In the project.clj file at the top level of your project, add monitor-rabbitmq as a dependency:
+In the *project.clj* file at the top level of your project, add **monitor-rabbitmq** as a dependency:
 
 ```clj
 (defproject my-rabbitmq-app "0.1.3"
@@ -45,9 +45,13 @@ In the project.clj file at the top level of your project, add monitor-rabbitmq a
 
 ### using the function ###
 
-Calling the send-rabbitmq-stats-to-riemann function will always send stats from all endpoints.
+Calling the *send-rabbitmq-stats-to-riemann* function will always send stats from all endpoints.
 
-There are also send-**[endpoint]**-rabbitmq-stats-to-riemann functions to only send stats from a specific endpoint, if so desired.
+There are also *send-*__[endpoint]__*-stats-to-riemann* functions to only send stats from a specific endpoint, if so desired:
+
+* *send-queues-stats-to-riemann*
+* *send-nodes-stats-to-riemann*
+
 
 ```clj
 (ns monitor-rabbitmq.example
@@ -77,7 +81,7 @@ There are also send-**[endpoint]**-rabbitmq-stats-to-riemann functions to only s
 ### upcoming changes ###
 
 * Function and variable names will change (no upper case) to better match Clojure conventions.
-* A new version will change how parameters are passed to send-rabbitmq-stats-to-Riemann.
+* A new version will change how parameters are passed to send-rabbitmq-stats-to-riemann.
 * More documentation about the meaning of the RabbitMQ statistics and how RabbitMQ gathers them.
 
 
