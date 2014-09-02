@@ -43,7 +43,7 @@ In the *project.clj* file at the top level of your project, add **monitor-rabbit
 ```clj
 (defproject my-rabbitmq-app "0.1.3"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [theladders/monitor-rabbitmq "2.1.0" ]])
+                 [theladders/monitor-rabbitmq "2.1.1" ]])
 ```
 
 ## Code examples ##
