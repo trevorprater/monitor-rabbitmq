@@ -267,18 +267,23 @@
     },
     {
         "message_stats": {
+            "ack": 12345,
             "ack_details": {
                 "avg_rate": 0.0
             },
+            "deliver": 123,
             "deliver_details": {
                 "avg_rate": 23.333333333333332
             },
+            "deliver_get": 321,
             "deliver_get_details": {
                 "avg_rate": 23.333333333333332
             },
+            "publish": 111111,
             "publish_details": {
                 "avg_rate": 0.0
             },
+            "redeliver": 2,
             "redeliver_details": {
                 "avg_rate": 23.333333333333332
             }
