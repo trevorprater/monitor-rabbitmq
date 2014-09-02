@@ -1,271 +1,5 @@
 [
     {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "andy-test"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "andy-test-src"
-    },
-    {
-        "message_stats": {
-            "ack_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "bluehornet-transactional-email"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "bluehornet-transactional-email.failures"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "bluehornet-transactional-email.legacy"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "bluehornet-transactional-email.legacy.failures"
-    },
-    {
-        "message_stats": {
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "get_details": {
-                "avg_rate": 0.0
-            },
-            "get_no_ack_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            },
-            "redeliver_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "bluehornet-transactional-email.rl-test"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "build.jobseeker.jobmatch.for.push.notification"
-    },
-    {
-        "message_stats": {
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "get_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "derek.bluehornet-transactional-email"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "job-alerts.calculation"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "job-alerts.calculation.start"
-    },
-    {
-        "message_stats": {
-            "ack_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_no_ack_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            },
-            "redeliver_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "job-application-info.aggregation"
-    },
-    {
-        "message_stats": {
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_no_ack_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "job-application.load"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "job-match-email.calculation"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "job-match-email.calculation.start"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "jobseeker-application-confirmation-email-builder"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "jobseeker-application-confirmation-email-builder.failures"
-    },
-    {
-        "message_stats": {
-            "publish_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 115
-        },
-        "name": "jobseeker-application-confirmation-email-builder.holding"
-    },
-    {
-        "message_stats": {
-            "ack_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "jobseeker.job.match.push.notification.aggregate"
-    },
-    {
-        "message_stats": {
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_no_ack_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "jobseeker.job.match.push.notification.build.start"
-    },
-    {
-        "message_stats": {
-            "ack_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "jobseeker.job.match.push.notification.persist"
-    },
-    {
-        "message_stats": {
-            "deliver_get_details": {
-                "avg_rate": 0.0
-            },
-            "deliver_no_ack_details": {
-                "avg_rate": 0.0
-            },
-            "publish_details": {
-                "avg_rate": 0.0
-            }
-        },
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "jobseeker.job.match.push.notification.send"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "joydip-test"
-    },
-    {
         "message_stats": {
             "ack": 12345,
             "ack_details": {
@@ -291,65 +25,34 @@
         "backing_queue_status": {
             "len": 1910
         },
-        "name": "match-jobseekers-with-jobs"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "match-jobseekers-with-jobs.failures"
+        "name": "test-queue-one"
     },
     {
         "message_stats": {
+            "ack": 54321,
+            "ack_details": {
+                "avg_rate": 2.0
+            },
+            "deliver": 321,
+            "deliver_details": {
+                "avg_rate": 33.333333333333332
+            },
+            "deliver_get": 10,
             "deliver_get_details": {
                 "avg_rate": 0.0
             },
-            "get_details": {
-                "avg_rate": 0.0
-            },
+            "publish": 123123,
             "publish_details": {
+                "avg_rate": 5.6
+            },
+            "redeliver": 0,
+            "redeliver_details": {
                 "avg_rate": 0.0
             }
         },
         "backing_queue_status": {
-            "len": 50
+            "len": 300
         },
-        "name": "match-jobseekers-with-jobs.unknown-routing-key"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "newsletter.jobs.calculation"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "newsletter.jobs.calculation.start"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "send-job-match-emails-via-bluehornet.emails"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "send-job-match-emails-via-bluehornet.emails.failures"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "send-job-match-emails-via-bluehornet.jobseekers"
-    },
-    {
-        "backing_queue_status": {
-            "len": 0
-        },
-        "name": "send-job-match-emails-via-bluehornet.start"
+        "name": "test-queue-two"
     }
 ]

@@ -15,7 +15,7 @@
 
 (deftest test-make-queue-monitoring-values
   (let [stats (cheshire/parse-string (slurp "test/stats.json") true)
-        stat (first (filter (fn [stat] (= (:name stat)  "match-jobseekers-with-jobs"))
+        stat (first (filter (fn [stat] (= (:name stat)  "test-queue-one"))
                             stats))
         stat-value (monitor/make-queue-monitoring-values stat "rmq")
         stat-count (count stat-value)
@@ -23,7 +23,7 @@
         values (second stat-value)]
     (testing "make-queue-monitoring-values"
       (is (= stat-count 2))
-      (is (= name "rmq.match-jobseekers-with-jobs"))
+      (is (= name "rmq.test-queue-one"))
       (is (= (count values) 17))
       (is (= (find-value "ack" values) 12345))
       (is (= (find-value "publish" values) 111111))
