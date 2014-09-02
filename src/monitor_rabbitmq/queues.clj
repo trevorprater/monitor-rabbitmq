@@ -20,9 +20,9 @@
 
 (defn make-message-stats-fragment [statistic-names]
   (let [query-parameters
-        (map (fn[name](str message-stat-prefix name))
+        (map (fn[name](str message-stat-prefix name ","))
              statistic-names)]
-    (apply str "name," query-parameters)))
+    (apply str query-parameters)))
 
 (defn make-message-stats-rate-fragment [statistic-names]
   (let [query-parameters
