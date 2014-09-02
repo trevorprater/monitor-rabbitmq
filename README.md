@@ -15,8 +15,14 @@ queues | length | nodes | fd_used
  | get no ack rate | | mem_alarm
  | publish rate | | disk_free_limit
  | redeliver rate | | disk_free_alarm
- | | | proc_used
- | | | proc_total
+ | ack (count) | | proc_used
+ | deliver (count) | | proc_total
+ | deliver get (count) | |
+ | deliver no ack (count) | |
+ | get (count) | |
+ | get no ack (count) | |
+ | publish (count)| |
+ | redeliver (count) | |
 
 Each statistic is converted to a Riemann event and sent to a Riemann server.
 
